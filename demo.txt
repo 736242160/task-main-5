@@ -1,0 +1,37 @@
+# ========== 节点定义 ==========
+node A B C D E F
+
+# ========== 链路定义（初始均停用） ==========
+link L1 A B
+link L2 B D
+link L3 A C
+link L4 C D
+link L5 D E
+link L6 B C
+link L7 E F
+
+# ========== 链路流：启用 ==========
+enable L1
+enable L2
+enable L3
+enable L4          # A-B-D-C-A 成环：应报告并定位成环链路 L4（仍启用作冗余）
+enable L5
+enable L7
+enable L7          # 重复启用：应拦截
+enable L99         # 不存在的链路：应报告
+
+# ========== 路由流 ==========
+route R1 A E A B D E        # 合法
+route R2 A F A C D E F      # 合法（走冗余链路 L4）
+route R3 A E A C E          # C-E 无链路：引用不存在链路
+route R4 A B A C A B        # 路径内 A 重复：路径成环
+route R5 A Z A B            # 目的 Z 不存在
+route R6 A D A C D          # 合法
+
+# ========== 链路流：停用（级联重路由） ==========
+disable L4         # R2、R6 受影响，应分别重路由为 A-B-D-E-F、A-B-D
+disable L6         # L6 从未启用：应拦截
+disable L2         # R1、R2 重路由失败：应报告源目的对 A->E、A->F
+
+# ========== 状态一致性 ==========
+route R7 A E A B D E        # L2 已停用：路径使用停用链路，应报告
