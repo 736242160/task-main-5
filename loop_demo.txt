@@ -1,0 +1,7 @@
+# 独立环路检测样例：三角形
+node A
+node B
+node C
+link L1 A B enable
+link L2 B C enable
+link L3 A C enable

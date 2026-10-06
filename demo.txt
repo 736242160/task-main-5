@@ -1,0 +1,39 @@
+# ===== 节点定义 =====
+node A
+node B
+node C
+node D
+node E
+
+# ===== 链路流：定义并启用 =====
+link L1 A B enable
+link L2 B C enable
+link L3 C D enable
+link L5 D E enable
+
+# ===== 环路检测样例：A-D 经 L1+L2+L3 已连通，启用 L4 将成环 -> 报告并阻塞 =====
+link L4 A D enable
+
+# ===== 重复启用拦截 =====
+link L1 A B enable
+
+# ===== 路由流（均走已启用链路）=====
+route A D A B C D
+route A E A B C D E
+route B D B C D
+
+# ===== 错误样例 =====
+route B C B A B C
+route A Z A Z
+link L9 A Z enable
+route A E A B E
+link L6 A C disable
+route A C A C
+route A D A D
+
+# ===== 断链 -> 自愈 + 级联重路由 =====
+link L3 C D disable
+link L1 A B disable
+
+# ===== 跨流状态延续：重新启用，中断路由自动恢复 =====
+link L3 C D enable
