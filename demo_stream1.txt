@@ -1,0 +1,9 @@
+# 流1：规则定义 + 季度版本 + 首批交易
+RULE fee "round(amount * rate + fee, 2)" rate=0 fee=0
+VERSION fee 1 2024-01-01 rate=0.01 fee=2
+VERSION fee 2 2024-04-01 rate=0.02 fee=3
+
+TXN T0 2023-12-31 fee amount=100      # 空档：早于首个版本
+TXN T1 2024-03-31 fee amount=1000     # 命中 v1
+TXN T2 2024-04-01 fee amount=1000     # 切换当天 -> 归新版本 v2
+SETTLE T1                             # T1 结算，结果冻结
