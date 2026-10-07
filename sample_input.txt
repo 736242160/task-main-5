@@ -1,0 +1,31 @@
+# ---- 币种定义流 ----
+CCY USD
+CCY CNY
+CCY EUR
+CCY JPY
+SETTLE CNY
+THRESHOLD 0.005
+
+# ---- 汇率流：EUR/CNY 直接报价 7.90，与经 USD 折算的 7.10*1.10=7.81 偏差约 1.15% ----
+RATE USD CNY 7.1000
+RATE EUR USD 1.1000
+RATE EUR CNY 7.9000
+RATE USD JPY 149.50
+
+# ---- 交易流 ----
+TXN T001 USD 1000
+TXN T002 EUR 500
+TXN T003 GBP 100          # GBP 未定义，应报错
+TXN T004 JPY 200000       # 无 JPY/CNY 直接报价，应经 USD 间接折算
+
+RATE USD CNY 7.2000       # 同币种对重复报价，应被拦截
+
+# ---- 汇率更新（其后重估用新汇率） ----
+UPDATE USD CNY 7.2500
+UPDATE EUR CNY 7.8200
+
+# ---- 重估流 ----
+REVAL 2026-10-07
+
+TXN T005 USD 200          # 更新后的新交易按新汇率折算
+REVAL 2026-10-08          # 汇率未再变，差额应为零、不出分录
